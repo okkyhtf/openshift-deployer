@@ -1,0 +1,41 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+  name: standard-ext4
+parameters:
+  type: pd-standard
+  fsType: ext4
+provisioner: kubernetes.io/gce-pd
+reclaimPolicy: Delete
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard-xfs
+parameters:
+  type: pd-standard
+  fsType: xfs
+provisioner: kubernetes.io/gce-pd
+reclaimPolicy: Delete
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ssd-ext4
+parameters:
+  type: pd-ssd
+  fsType: ext4
+provisioner: kubernetes.io/gce-pd
+reclaimPolicy: Delete
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ssd-xfs
+parameters:
+  type: pd-ssd
+  fsType: xfs
+provisioner: kubernetes.io/gce-pd
+reclaimPolicy: Delete
