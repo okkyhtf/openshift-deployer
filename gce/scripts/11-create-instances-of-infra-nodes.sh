@@ -7,12 +7,12 @@ for i in $(seq 0 $(($INFRA_NODE_COUNT-1))); do
   zone[$i]=${ZONES[$i % ${#ZONES[@]}]}
   echo "=> Creating Persistent Disk \"${CLUSTERID}-infra-${i}-containers\" at \"${zone[$i]}\"..."
   gcloud compute disks create ${CLUSTERID}-infra-${i}-containers \
-    --type=pd-ssd \
+    --type=${INFRADISKTYPE} \
     --size=${INFRACONTAINERSSIZE} \
     --zone=${zone[$i]}
   echo "=> Creating Persistent Disk \"${CLUSTERID}-infra-${i}-local\" at \"${zone[$i]}\"..."
   gcloud compute disks create ${CLUSTERID}-infra-${i}-local \
-    --type=pd-ssd \
+    --type=${INFRADISKTYPE} \
     --size=${INFRALOCALSIZE} \
     --zone=${zone[$i]}
 done
@@ -34,7 +34,7 @@ for i in $(seq 0 $(($INFRA_NODE_COUNT-1))); do
     --image=${OSIMAGE} \
     --image-project=${OSIMAGEPROJECT} \
     --boot-disk-size=${INFRADISKSIZE} \
-    --boot-disk-type=pd-ssd \
+    --boot-disk-type=${INFRADISKTYPE} \
     --boot-disk-device-name=${CLUSTERID}-infra-${i} \
     --disk=name=${CLUSTERID}-infra-${i}-containers,device-name=${CLUSTERID}-infra-${i}-containers,mode=rw,boot=no \
     --disk=name=${CLUSTERID}-infra-${i}-local,device-name=${CLUSTERID}-infra-${i}-local,mode=rw,boot=no \

@@ -2,6 +2,13 @@
 
 eval "$MYZONES_LIST"
 
+# Bastion host
+echo "=> Removing startup script for bastion host..."
+zone=${DEFAULTZONE}
+gcloud compute instances remove-metadata ${CLUSTERID}-bastion \
+  --keys startup-script \
+  --zone=${zone}
+
 # Master nodes
 echo "=> Removing startup script for master nodes..."
 for i in $(seq 0 $((${MASTER_NODE_COUNT}-1))); do

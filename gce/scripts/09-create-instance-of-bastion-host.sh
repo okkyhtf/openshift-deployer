@@ -16,6 +16,7 @@ gcloud compute instances create ${CLUSTERID}-bastion \
   --image=${OSIMAGE} \
   --image-project=${OSIMAGEPROJECT} \
   --boot-disk-size=${BASTIONDISKSIZE} \
-  --boot-disk-type=pd-ssd \
+  --boot-disk-type=${BASTIONDISKTYPE} \
   --boot-disk-device-name=${CLUSTERID}-bastion \
+  --metadata-from-file startup-script=./initialize-bastion-host.sh \
   --zone=${DEFAULTZONE}

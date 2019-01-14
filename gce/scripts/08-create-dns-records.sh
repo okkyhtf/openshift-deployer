@@ -8,7 +8,7 @@ export LBIP=$(gcloud compute addresses list \
 gcloud dns record-sets transaction start \
   --zone=${DNSZONE}
 gcloud dns record-sets transaction add ${LBIP} \
-  --name=${CLUSTERID}-okd.${DOMAIN} \
+  --name=paas.${DOMAIN} \
   --ttl=${TTL} \
   --type=A \
   --zone=${DNSZONE}
@@ -23,7 +23,7 @@ export APPSLBIP=$(gcloud compute addresses list \
 gcloud dns record-sets transaction start \
   --zone=${DNSZONE}
 gcloud dns record-sets transaction add ${APPSLBIP} \
-  --name=\*.${CLUSTERID}-apps.${DOMAIN} \
+  --name=\*.apps.${DOMAIN} \
   --ttl=${TTL} \
   --type=A \
   --zone=${DNSZONE}
@@ -38,7 +38,7 @@ export BASTIONIP=$(gcloud compute addresses list \
 gcloud dns record-sets transaction start \
   --zone=${DNSZONE}
 gcloud dns record-sets transaction add ${BASTIONIP} \
-  --name=${CLUSTERID}-bastion.${DOMAIN} \
+  --name=bastion.${DOMAIN} \
   --ttl=${TTL} \
   --type=A \
   --zone=${DNSZONE}

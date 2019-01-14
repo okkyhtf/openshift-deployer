@@ -7,17 +7,17 @@ for i in $(seq 0 $((${MASTER_NODE_COUNT}-1))); do
   zone[$i]=${ZONES[$i % ${#ZONES[@]}]}
   echo "=> Creating Persistent Disk \"${CLUSTERID}-master-${i}-etcd\" at \"${zone[$i]}\"..."
   gcloud compute disks create ${CLUSTERID}-master-${i}-etcd \
-    --type=pd-ssd \
+    --type=${MASTERDISKTYPE} \
     --size=${ETCDSIZE} \
     --zone=${zone[$i]}
   echo "=> Creating Persistent Disk \"${CLUSTERID}-master-${i}-containers\" at \"${zone[$i]}\"..."
   gcloud compute disks create ${CLUSTERID}-master-${i}-containers \
-    --type=pd-ssd \
+    --type=${MASTERDISKTYPE} \
     --size=${MASTERCONTAINERSSIZE} \
     --zone=${zone[$i]}
   echo "=> Creating Persistent Disk \"${CLUSTERID}-master-${i}-local\" at \"${zone[$i]}\"..."
   gcloud compute disks create ${CLUSTERID}-master-${i}-local \
-    --type=pd-ssd \
+    --type=${MASTERDISKTYPE} \
     --size=${MASTERLOCALSIZE} \
     --zone=${zone[$i]}
 done

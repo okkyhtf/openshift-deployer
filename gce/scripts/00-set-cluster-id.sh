@@ -1,5 +1,5 @@
 #!/bin/bash
 
-# OpenShift Cluster ID
 export PREFIX=""
 export CLUSTERID="${PREFIX}${RANDOM}"
+echo "Cluster ID is $CLUSTERID"

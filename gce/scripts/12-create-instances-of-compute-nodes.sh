@@ -7,12 +7,12 @@ for i in $(seq 0 $(($APP_NODE_COUNT-1))); do
   zone[$i]=${ZONES[$i % ${#ZONES[@]}]}
   echo "=> Creating Persistent Disk \"${CLUSTERID}-compute-${i}-containers\" at \"${zone[$i]}\"..."
   gcloud compute disks create ${CLUSTERID}-compute-${i}-containers \
-    --type=pd-ssd \
+    --type=${APPDISKTYPE} \
     --size=${APPCONTAINERSSIZE} \
     --zone=${zone[$i]}
   echo "=> Creating Persistent Disk \"${CLUSTERID}-compute-${i}-local\" at \"${zone[$i]}\"..."
   gcloud compute disks create ${CLUSTERID}-compute-${i}-local \
-    --type=pd-ssd \
+    --type=${APPDISKTYPE} \
     --size=${APPLOCALSIZE} \
     --zone=${zone[$i]}
 done
@@ -34,7 +34,7 @@ for i in $(seq 0 $(($APP_NODE_COUNT-1))); do
     --image=${OSIMAGE} \
     --image-project=${OSIMAGEPROJECT} \
     --boot-disk-size=${APPDISKSIZE} \
-    --boot-disk-type=pd-ssd \
+    --boot-disk-type=${APPDISKTYPE} \
     --boot-disk-device-name=${CLUSTERID}-compute-${i} \
     --disk=name=${CLUSTERID}-compute-${i}-containers,device-name=${CLUSTERID}-compute-${i}-containers,mode=rw,boot=no \
     --disk=name=${CLUSTERID}-compute-${i}-local,device-name=${CLUSTERID}-compute-${i}-local,mode=rw,boot=no \
