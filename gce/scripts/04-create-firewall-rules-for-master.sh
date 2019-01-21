@@ -46,7 +46,7 @@ gcloud compute firewall-rules create ${CLUSTERID}-any-to-masters \
 
 # Infra to master
 echo "=> Creating Firewall Rule for Prometheus scrape job..."
-gcloud compute firewall-rules create ${CLUSTERID}-infra-to-masters \
+gcloud compute firewall-rules create ${CLUSTERID}-infra-to-master \
   --direction=INGRESS \
   --priority=1000  \
   --network=${CLUSTERID_NETWORK} \
