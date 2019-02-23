@@ -27,7 +27,7 @@ variable "bastion_boot_disk_size" {
 }
 
 variable "bastion_boot_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "master_count" {
@@ -35,7 +35,7 @@ variable "master_count" {
 }
 
 variable "master_machine_size" {
-  default = "n1-standard-1"
+  default = "n1-highmem-4"
 }
 
 variable "master_boot_disk_size" {
@@ -43,11 +43,11 @@ variable "master_boot_disk_size" {
 }
 
 variable "master_boot_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "master_etcd_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "master_etcd_disk_size" {
@@ -55,7 +55,7 @@ variable "master_etcd_disk_size" {
 }
 
 variable "master_containers_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "master_containers_disk_size" {
@@ -63,7 +63,7 @@ variable "master_containers_disk_size" {
 }
 
 variable "master_local_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "master_local_disk_size" {
@@ -75,7 +75,7 @@ variable "infra_count" {
 }
 
 variable "infra_machine_size" {
-  default = "n1-standard-1"
+  default = "n1-highmem-4"
 }
 
 variable "infra_boot_disk_size" {
@@ -83,11 +83,11 @@ variable "infra_boot_disk_size" {
 }
 
 variable "infra_boot_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "infra_containers_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "infra_containers_disk_size" {
@@ -95,7 +95,7 @@ variable "infra_containers_disk_size" {
 }
 
 variable "infra_local_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "infra_local_disk_size" {
@@ -107,7 +107,7 @@ variable "compute_count" {
 }
 
 variable "compute_machine_size" {
-  default = "n1-standard-1"
+  default = "n1-highmem-4"
 }
 
 variable "compute_boot_disk_size" {
@@ -115,11 +115,11 @@ variable "compute_boot_disk_size" {
 }
 
 variable "compute_boot_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "compute_containers_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "compute_containers_disk_size" {
@@ -127,7 +127,7 @@ variable "compute_containers_disk_size" {
 }
 
 variable "compute_local_disk_type" {
-  default = "pd-standard"
+  default = "pd-ssd"
 }
 
 variable "compute_local_disk_size" {

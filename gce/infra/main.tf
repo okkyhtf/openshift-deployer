@@ -563,33 +563,33 @@ resource "google_compute_instance" "compute" {
   ]
 }
 
-resource "google_compute_instance_template" "master" {
-  name = "${var.cluster_id}-master-template"
-  machine_type = "${var.master_machine_size}"
-  region = "${var.region}"
+#resource "google_compute_instance_template" "master" {
+#  name = "${var.cluster_id}-master-template"
+#  machine_type = "${var.master_machine_size}"
+#  region = "${var.region}"
+#
+#  network_interface {
+#    subnetwork = "${google_compute_subnetwork.default.name}"
+#
+#    access_config {
+#      // Ephemeral IP
+#    }
+#  }
+#
+#  // boot disk
+#  disk {
+#    boot = "true"
+#    source_image = "debian-cloud/debian-9"
+#  }
+#}
 
-  network_interface {
-    subnetwork = "${google_compute_subnetwork.default.name}"
-
-    access_config {
-      // Ephemeral IP
-    }
-  }
-
-  // boot disk
-  disk {
-    boot = "true"
-    source_image = "debian-cloud/debian-9"
-  }
-}
-
-resource "google_compute_instance_group_manager" "master" {
-  name               = "${var.cluster_id}-master-manager"
-  instance_template  = "${google_compute_instance_template.master.self_link}"
-  base_instance_name = "${var.cluster_id}-master"
-  zone               = "${var.zone}"
-  target_size        = "3"
-}
+#resource "google_compute_instance_group_manager" "master" {
+#  name               = "${var.cluster_id}-master-manager"
+#  instance_template  = "${google_compute_instance_template.master.self_link}"
+#  base_instance_name = "${var.cluster_id}-master"
+#  zone               = "${var.zone}"
+#  target_size        = "3"
+#}
 
 resource "google_compute_health_check" "master-lb-healthcheck" {
   name = "${var.cluster_id}-master-lb-healthcheck"
@@ -602,4 +602,119 @@ resource "google_compute_health_check" "master-lb-healthcheck" {
     port = "443"
     request_path = "/healthz"
  }
+}
+
+resource "google_compute_instance_group" "masters-group" {
+  name = "${var.cluster_id}-masters-${var.zone}"
+  description = "Masters instance group"
+  zone = "${var.zone}"
+
+  instances = [
+    "${google_compute_instance.master.0.self_link}",
+    "${google_compute_instance.master.1.self_link}",
+    "${google_compute_instance.master.2.self_link}"
+  ]
+
+  named_port {
+    name = "ocp-api"
+    port = "443"
+  }
+}
+
+resource "google_compute_backend_service" "master-lb-backend" {
+  name = "${var.cluster_id}-master-lb-backend"
+  description = "TCP backend service with client IP affinity."
+  port_name = "ocp-api"
+  protocol = "TCP"
+  session_affinity = "CLIENT_IP"
+
+  health_checks = [
+    "${google_compute_health_check.master-lb-healthcheck.self_link}"
+  ]
+}
+
+resource "google_compute_target_tcp_proxy" "master-lb-target-proxy" {
+  name = "${var.cluster_id}-master-lb-target-proxy"
+  description = "Disabling proxy headers."
+  backend_service = "${google_compute_backend_service.master-lb-backend.self_link}"
+  proxy_header = "NONE"
+}
+
+resource "google_compute_global_forwarding_rule" "master-lb-forwarding-rule" {
+  name = "${var.cluster_id}-master-lb-forwarding-rule"
+  ip_address = "${google_compute_global_address.master-lb.address}"
+  target = "${google_compute_target_tcp_proxy.master-lb-target-proxy.self_link}"
+  port_range = "443"
+}
+
+resource "google_compute_firewall" "healthcheck-to-lb" {
+  name = "${var.cluster_id}-healthcheck-to-lb"
+  network = "${google_compute_network.default.name}"
+  direction = "INGRESS"
+  priority = "1000"
+
+  allow {
+    protocol = "tcp"
+    ports = ["443"]
+  }
+
+  source_ranges = [
+    "130.211.0.0/22",
+    "35.191.0.0/16"
+  ]
+
+  target_tags = [
+    "${var.cluster_id}-master"
+  ]
+}
+
+resource "google_compute_http_health_check" "infra-lb-healthcheck" {
+  name = "${var.cluster_id}-infra-lb-healthcheck"
+  timeout_sec = 10
+  check_interval_sec = 10
+  healthy_threshold = 3
+  unhealthy_threshold = 3
+  port = "1936"
+  request_path = "/healthz"
+}
+
+resource "google_compute_target_pool" "infra-pool" {
+  name = "${var.cluster_id}-infra-pool"
+
+  instances = [
+    "${var.zone}/${var.cluster_id}-infra-0",
+    "${var.zone}/${var.cluster_id}-infra-1",
+    "${var.zone}/${var.cluster_id}-infra-2"
+  ]
+
+  health_checks = [
+    "${google_compute_http_health_check.infra-lb-healthcheck.self_link}",
+  ]
+}
+
+resource "google_compute_forwarding_rule" "infra-http" {
+  name = "${var.cluster_id}-infra-http"
+  ip_address = "${google_compute_address.apps-lb.address}"
+  region = "${var.region}"
+  target = "${google_compute_target_pool.infra-pool.self_link}"
+  port_range = "80"
+}
+
+resource "google_compute_forwarding_rule" "infra-https" {
+  name = "${var.cluster_id}-infra-https"
+  ip_address = "${google_compute_address.apps-lb.address}"
+  region = "${var.region}"
+  target = "${google_compute_target_pool.infra-pool.self_link}"
+  port_range = "443"
+}
+
+resource "google_storage_bucket" "registry" {
+  name = "${var.cluster_id}-registry"
+  storage_class = "REGIONAL"
+  location = "${var.region}"
+  force_destroy = "true"
+
+  labels = {
+    ocp-cluster = "${var.cluster_id}"
+  }
 }
