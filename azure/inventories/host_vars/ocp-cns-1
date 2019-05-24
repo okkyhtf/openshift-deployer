@@ -1,0 +1,7 @@
+---
+openshift_node_group_name: 'node-config-storage'
+glusterfs_devices:
+  - "/dev/sdc"
+glusterfs_ip: 192.168.129.25
+glusterfs_zone: 1
+glusterfs_cluster: 1
