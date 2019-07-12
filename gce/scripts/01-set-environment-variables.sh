@@ -3,7 +3,7 @@
 # Timezone
 export TIMEZONE="Asia/Jakarta"
 # Google Project ID
-export PROJECTID="sayurbox-apps"
+export PROJECTID="sample-project"
 # Google Region
 export REGION="asia-southeast1"
 export DEFAULTZONE="asia-southeast1-b"
@@ -18,8 +18,8 @@ export CLUSTERID_SUBNET="${CLUSTERID}-subnet"
 # Subnet CIDR, modify if needed
 export CLUSTERID_SUBNET_CIDR="10.240.1.0/24"
 # DNS
-export DNSZONE="${CLUSTERID}-sayurbox-io"
-export DOMAIN="${CLUSTERID}.sayurbox.io."
+export DNSZONE="${CLUSTERID}-sample-project-io"
+export DOMAIN="${CLUSTERID}.sample-project.io."
 export TTL=300
 # RHEL image to be used
 #export RHELIMAGE="${CLUSTERID}-rhel-image"
