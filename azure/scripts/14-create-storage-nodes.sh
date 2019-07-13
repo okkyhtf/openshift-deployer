@@ -1,9 +1,10 @@
 #!/bin/bash
 
-for i in $(eval echo "{1..${STORAGE_NODE_COUNT}}"); do
+for (( i=0; i<4; i++ ))
+do
   az network nic create
     --resource-group ${RESOURCE_GROUP} \
-    --name ocp-cns-${i}VMNic \
+    --name ocp-storage-${i}-nic \
     --vnet-name ${VNET} \
     --subnet ${SUBNET} \
     --network-security-group ${CLUSTERID}-storage-nsg \
@@ -11,33 +12,58 @@ for i in $(eval echo "{1..${STORAGE_NODE_COUNT}}"); do
     --public-ip-address "";
 done
 
-for i in $(eval echo "{1..${STORAGE_NODE_COUNT}}"); do
+for (( i=0; i<4; i++ ))
+do
   az vm create \
     --resource-group ${RESOURCE_GROUP} \
-    --name ocp-cns-$i \
-    --availability-set ocp-cns-instances \
+    --name ocp-storage-$i \
+    --availability-set ocp-storage-instances \
     --size Standard_D8s_v3 \
     --image RedHat:RHEL:7-RAW:latest \
     --admin-user cloud-user \
-    --ssh-key /root/.ssh/id_rsa.pub \
-    --data-disk-sizes-gb 32 \
-    --nics ocp-cns-${i}VMNic;
+    --ssh-key ~/.ssh/azure.pub \
+    --os-disk-name ${CLUSTERID}-ocp-storage-root-$i \
+    --os-disk-size-gb ${STORAGE_ROOT_SIZE} \
+    --nics ocp-storage-${i}-nic;
 done
 
-for i in $(eval echo "{1..${STORAGE_NODE_COUNT}}"); do
+for (( i=0; i<4; i++ ))
+do
   az vm disk attach \
     --resource-group ${RESOURCE_GROUP} \
-    --vm-name ocp-cns-$i \
-    --disk ocp-cns-container-$i \
-    --new --size-gb 64;
+    --vm-name ocp-storage-$i \
+    --name ocp-storage-log-$i \
+    --new \
+    --size-gb ${STORAGE_LOG_SIZE};
 done
 
-for i in $(eval echo "{1..${STORAGE_NODE_COUNT}}"); do
+for (( i=0; i<4; i++ ))
+do
   az vm disk attach \
     --resource-group ${RESOURCE_GROUP} \
-    --vm-name ocp-cns-$i \
-    --disk ocp-cns-volume-$i \
+    --vm-name ocp-storage-$i \
+    --name ocp-storage-container-$i \
+    --new \
+    --size-gb ${STORAGE_CONTAINER_SIZE};
+done
+
+for (( i=0; i<4; i++ ))
+do
+  az vm disk attach \
+    --resource-group ${RESOURCE_GROUP} \
+    --vm-name ocp-storage-$i \
+    --name ocp-storage-local-$i \
+    --new \
+    --size-gb ${STORAGE_LOCAL_SIZE};
+done
+
+for (( i=0; i<4; i++ ))
+do
+  az vm disk attach \
+    --resource-group ${RESOURCE_GROUP} \
+    --vm-name ocp-storage-$i \
+    --name ocp-storage-volume-$i \
     --sku Premium_LRS \
     --new \
-    --size-gb 512;
+    --size-gb ${STORAGE_VOLUME_SIZE};
  done

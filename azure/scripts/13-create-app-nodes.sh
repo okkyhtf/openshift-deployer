@@ -1,9 +1,11 @@
 #!/bin/bash
 
-for i in $(eval echo "{1..${APP_NODE_COUNT}}"); do
+for (( i=0; i<20; i++ ))
+do
+  echo "=> Creating NIC for App ${i}..."
   az network nic create \
     --resource-group ${RESOURCE_GROUP} \
-    --name ${CLUSTERID}-ocp-app-${i}VMNic \
+    --name ${CLUSTERID}-ocp-app-${i}-nic \
     --vnet-name ${VNET} \
     --subnet ${SUBNET} \
     --network-security-group ${CLUSTERID}-node-nsg \
@@ -11,7 +13,9 @@ for i in $(eval echo "{1..${APP_NODE_COUNT}}"); do
     --public-ip-address "";
 done
 
-for i in $(eval echo "{1..${APP_NODE_COUNT}}"); do
+for (( i=0; i<20; i++ ))
+do
+  echo "=> Creating App ${i}..."
   az vm create \
     --resource-group ${RESOURCE_GROUP} \
     --name ${CLUSTERID}-ocp-app-$i \
@@ -19,34 +23,41 @@ for i in $(eval echo "{1..${APP_NODE_COUNT}}"); do
     --size ${APP_SIZE} \
     --image RedHat:RHEL:7-RAW:latest \
     --admin-user cloud-user \
-    --ssh-key /root/.ssh/id_rsa.pub \
-    --data-disk-sizes-gb ${APP_ROOT_SIZE} \
-    --nics ${CLUSTERID}-ocp-app-${i}VMNic; \
+    --ssh-key ~/.ssh/azure.pub \
+    --os-disk-name ${CLUSTERID}-ocp-app-root-$i \
+    --os-disk-size-gb ${APP_ROOT_SIZE} \
+    --nics ${CLUSTERID}-ocp-app-${i}-nic; \
 done
 
-for i in $(eval echo "{1..${APP_NODE_COUNT}}"); do
+for (( i=0; i<20; i++ ))
+do
+  echo "=> Creating and attaching log disk to App ${i}..."
   az vm disk attach \
     --resource-group ${RESOURCE_GROUP} \
     --vm-name ${CLUSTERID}-ocp-app-$i \
-    --disk ${CLUSTERID}-ocp-app-log-$i \
+    --name ${CLUSTERID}-ocp-app-log-$i \
     --new
     --size-gb ${APP_LOG_SIZE};
 done
 
-for i in $(eval echo "{1..${APP_NODE_COUNT}}"); do
+for (( i=0; i<20; i++ ))
+do
+  echo "=> Creating and attaching containers disk to App ${i}..."
   az vm disk attach \
     --resource-group ${RESOURCE_GROUP} \
     --vm-name ${CLUSTERID}-ocp-app-$i \
-    --disk ${CLUSTERID}-ocp-app-container-$i \
+    --name ${CLUSTERID}-ocp-app-container-$i \
     --new
-    --size-gb ${APP_CONTAINERS_SIZE};
+    --size-gb ${APP_CONTAINER_SIZE};
 done
 
-for i in $(eval echo "{1..${APP_NODE_COUNT}}"); do
+for (( i=0; i<20; i++ ))
+do
+  echo "=> Creating and attaching local volume disk to App ${i}..."
   az vm disk attach \
     --resource-group ${RESOURCE_GROUP} \
     --vm-name ${CLUSTERID}-ocp-app-$i \
-    --disk ${CLUSTERID}-ocp-app-local-$i \
+    --name ${CLUSTERID}-ocp-app-local-$i \
     --new
     --size-gb ${APP_LOCAL_SIZE};
 done
