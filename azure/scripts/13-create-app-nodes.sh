@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for (( i=0; i<20; i++ ))
+for (( i=0; i<25; i++ ))
 do
   echo "=> Creating NIC for App ${i}..."
   az network nic create \
@@ -13,7 +13,7 @@ do
     --public-ip-address "";
 done
 
-for (( i=0; i<20; i++ ))
+for (( i=0; i<25; i++ ))
 do
   echo "=> Creating App ${i}..."
   az vm create \
@@ -29,35 +29,35 @@ do
     --nics ${CLUSTERID}-ocp-app-${i}-nic; \
 done
 
-for (( i=0; i<20; i++ ))
+for (( i=0; i<25; i++ ))
 do
   echo "=> Creating and attaching log disk to App ${i}..."
   az vm disk attach \
     --resource-group ${RESOURCE_GROUP} \
     --vm-name ${CLUSTERID}-ocp-app-$i \
     --name ${CLUSTERID}-ocp-app-log-$i \
-    --new
+    --new \
     --size-gb ${APP_LOG_SIZE};
 done
 
-for (( i=0; i<20; i++ ))
+for (( i=0; i<25; i++ ))
 do
-  echo "=> Creating and attaching containers disk to App ${i}..."
+  echo "=> Creating and attaching container disk to App ${i}..."
   az vm disk attach \
     --resource-group ${RESOURCE_GROUP} \
     --vm-name ${CLUSTERID}-ocp-app-$i \
     --name ${CLUSTERID}-ocp-app-container-$i \
-    --new
+    --new \
     --size-gb ${APP_CONTAINER_SIZE};
 done
 
-for (( i=0; i<20; i++ ))
+for (( i=0; i<25; i++ ))
 do
   echo "=> Creating and attaching local volume disk to App ${i}..."
   az vm disk attach \
     --resource-group ${RESOURCE_GROUP} \
     --vm-name ${CLUSTERID}-ocp-app-$i \
     --name ${CLUSTERID}-ocp-app-local-$i \
-    --new
+    --new \
     --size-gb ${APP_LOCAL_SIZE};
 done

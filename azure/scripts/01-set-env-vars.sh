@@ -15,6 +15,10 @@ export SUBNET="${CLUSTERID}-subnet"
 export SUBNET_CIDR="10.0.0.0/24"
 
 # Master nodes settings
+export BASTION_SIZE="Standard_D2s_v3"
+export BASTION_ROOT_SIZE="32"
+
+# Master nodes settings
 export MASTER_SIZE="Standard_D8s_v3"
 export MASTER_NODE_COUNT="3"
 export MASTER_ROOT_SIZE="32"
