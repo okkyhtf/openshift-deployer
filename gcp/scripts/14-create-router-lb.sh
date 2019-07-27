@@ -15,7 +15,8 @@ echo "=> Creating Target Pool \"${CLUSTERID}-infra\"..."
 gcloud compute target-pools create ${CLUSTERID}-infra \
   --http-health-check ${CLUSTERID}-infra-lb-healthcheck
 
-for i in $(seq 0 $(($INFRA_NODE_COUNT-1))); do
+for i in $(seq 0 $(($INFRA_NODE_COUNT-1)))
+do
   echo "=> Adding infra nodes to target pool..."
   gcloud compute target-pools add-instances ${CLUSTERID}-infra \
     --instances=${CLUSTERID}-infra-${i}

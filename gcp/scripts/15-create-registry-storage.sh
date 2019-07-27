@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Bucket to host registry
-echo "=> Creating Bucket \"${CLUSTERID}-registry\" for registry..."
-gsutil mb -l ${REGION} gs://${CLUSTERID}-registry
+echo "=> Creating Bucket \"${CLUSTERID}-demo10447-registry\" for registry..."
+gsutil mb -l ${REGION} gs://${CLUSTERID}-demo10447-registry
 
 cat <<EOF > labels.json
 {
@@ -10,6 +10,6 @@ cat <<EOF > labels.json
 }
 EOF
 
-gsutil label set labels.json gs://${CLUSTERID}-registry
+gsutil label set labels.json gs://${CLUSTERID}-demo10447-registry
 rm -f labels.json
 

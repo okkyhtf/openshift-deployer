@@ -22,7 +22,8 @@ gcloud compute backend-services create ${CLUSTERID}-master-lb-backend \
 eval "$MYZONES_LIST"
 
 # Multizone and single zone support for instance groups
-for i in $(seq 0 $((${MASTER_NODE_COUNT}-1))); do
+for i in $(seq 0 $((${MASTER_NODE_COUNT}-1)))
+do
   zone[$i]=${ZONES[$i % ${#ZONES[@]}]}
   echo "=> Creating Instance Group \"${CLUSTERID}-masters-${zone[$i]}\" at \"${zone[$i]}\" with backend service"
   gcloud compute instance-groups unmanaged create ${CLUSTERID}-masters-${zone[$i]} \

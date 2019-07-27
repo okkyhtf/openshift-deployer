@@ -3,7 +3,8 @@
 # Disks multizone and single zone support
 eval "$MYZONES_LIST"
 
-for i in $(seq 0 $((${MASTER_NODE_COUNT}-1))); do
+for i in $(seq 0 $((${MASTER_NODE_COUNT}-1)))
+do
   zone[$i]=${ZONES[$i % ${#ZONES[@]}]}
   echo "=> Creating Persistent Disk \"${CLUSTERID}-master-${i}-etcd\" at \"${zone[$i]}\"..."
   gcloud compute disks create ${CLUSTERID}-master-${i}-etcd \
@@ -23,7 +24,8 @@ for i in $(seq 0 $((${MASTER_NODE_COUNT}-1))); do
 done
 
 # Master instances multizone and single zone support
-for i in $(seq 0 $((${MASTER_NODE_COUNT}-1))); do
+for i in $(seq 0 $((${MASTER_NODE_COUNT}-1)))
+do
   zone[$i]=${ZONES[$i % ${#ZONES[@]}]}
   echo "=> Creating Compute Engine Instance \"${CLUSTERID}-master-${i}\" at \"${zone[$i]}\"..."
   gcloud compute instances create ${CLUSTERID}-master-${i} \
@@ -33,7 +35,8 @@ for i in $(seq 0 $((${MASTER_NODE_COUNT}-1))); do
     --address="" \
     --no-public-ptr \
     --maintenance-policy=MIGRATE \
-    --scopes=https://www.googleapis.com/auth/cloud.useraccounts.readonly,https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/servicecontrol \
+    --scopes=compute-rw,storage-rw,service-management,service-control,logging-write,monitoring-write \
+    --service-account=${SERVICE_ACCOUNT}@${PROJECT}.iam.gserviceaccount.com \
     --tags=${CLUSTERID}-master,${CLUSTERID}-node \
     --metadata "ocp-cluster=${CLUSTERID},${CLUSTERID}-type=master" \
     --image=${OSIMAGE} \
